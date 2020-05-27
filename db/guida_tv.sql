@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 21, 2020 alle 16:06
+-- Creato il: Mag 27, 2020 alle 17:20
 -- Versione del server: 10.4.11-MariaDB
 -- Versione PHP: 7.4.6
 
@@ -20,6 +20,24 @@ SET time_zone = "+00:00";
 --
 -- Database: `guida_tv`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `login`
+--
+
+CREATE TABLE `login` (
+  `username` varchar(100) NOT NULL,
+  `password` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dump dei dati per la tabella `login`
+--
+
+INSERT INTO `login` (`username`, `password`) VALUES
+('admin', '$2a$12$gEmD00lOmqTCwoECsZsFWui4SLPf5bcCqFwFUw9LcwDahLQYclLze');
 
 -- --------------------------------------------------------
 
@@ -54,6 +72,12 @@ CREATE TABLE `programma` (
 --
 -- Indici per le tabelle scaricate
 --
+
+--
+-- Indici per le tabelle `login`
+--
+ALTER TABLE `login`
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indici per le tabelle `programma`
