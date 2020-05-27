@@ -1,5 +1,12 @@
 package org.unnamedgroup.restapi.security;
 
+import org.apache.commons.dbutils.DbUtils;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -14,39 +21,45 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-/**
- *
- * @author didattica /rest/auth
- *
- */
 @Path("auth")
 public class AutenticazioneResource {
+
+    // POST ==> /rest/auth/login?username=admin&password=admin
 
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response doLogin(@Context UriInfo uriinfo,
+    public boolean doLogin(@Context UriInfo uriinfo,
             //un altro modo per ricevere e iniettare i parametri con JAX-RS...
             @FormParam("username") String username,
             @FormParam("password") String password) {
+
         try {
             if (authenticate(username, password)) {
-                /* per esempio */
+                return true;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        /**
+        try {
+            if (authenticate(username, password)) {
+
+                System.out.println("true");
                 String authToken = issueToken(uriinfo, username);
 
-                //return Response.ok(authToken).build();
-                //return Response.ok().cookie(new NewCookie("token", authToken)).build();
-                //return Response.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken).build();
-                //Restituiamolo in tutte le modalità, giusto per fare un esempio..
-                return Response.ok(authToken)
-                        .cookie(new NewCookie("token", authToken))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken).build();
+                // return the token on response
+                return Response.ok(authToken).build();
+
             } else {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
+        } **/
+
+        return false;
     }
 
     @Logged
@@ -65,9 +78,33 @@ public class AutenticazioneResource {
         }
     }
 
-    private boolean authenticate(String username, String password) {
-        /* autenticare! */
-        return true;
+    /* User authentication */
+    public static boolean authenticate(String username, String password) throws SQLException {
+
+        Connection dbConnection = DBManager.getDBConenction();
+        PreparedStatement pst = null;
+        boolean result = false;
+
+        try {
+
+            System.out.println(username);
+
+            pst = dbConnection.prepareStatement("SELECT password FROM login WHERE username = ?");
+            pst.setString(1, username);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                //Check if the provided plain text password and the hashed one are equal
+                if (BCrypt.checkpw(password, rs.getString("password")))
+                    result = true;
+            }
+        } catch (Exception e) {
+                e.printStackTrace();
+        } finally {
+            DbUtils.close(dbConnection);
+        }
+
+        return result;
     }
 
     private String issueToken(UriInfo context, String username) {

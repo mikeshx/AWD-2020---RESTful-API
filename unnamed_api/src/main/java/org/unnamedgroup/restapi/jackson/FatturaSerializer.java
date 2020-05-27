@@ -25,5 +25,6 @@ public class FatturaSerializer extends JsonSerializer<Fattura> {
         jgen.writeNumberField("totaleIVAInclusa", item.getTotaleIVAInclusa());
         jgen.writeEndObject(); // }
         jgen.writeEndObject(); // }
+
     }
 }
