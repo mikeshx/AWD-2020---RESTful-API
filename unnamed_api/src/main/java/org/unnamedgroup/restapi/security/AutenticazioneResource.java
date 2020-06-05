@@ -1,13 +1,21 @@
 package org.unnamedgroup.restapi.security;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.dbutils.DbUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
+
+import java.security.Key;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,9 +23,9 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
+
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -29,20 +37,12 @@ public class AutenticazioneResource {
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public boolean doLogin(@Context UriInfo uriinfo,
+
+    public Response doLogin(@Context UriInfo uriinfo,
             //un altro modo per ricevere e iniettare i parametri con JAX-RS...
             @FormParam("username") String username,
             @FormParam("password") String password) {
 
-        try {
-            if (authenticate(username, password)) {
-                return true;
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
-        /**
         try {
             if (authenticate(username, password)) {
 
@@ -57,9 +57,7 @@ public class AutenticazioneResource {
             }
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
-        } **/
-
-        return false;
+        }
     }
 
     @Logged
@@ -107,20 +105,17 @@ public class AutenticazioneResource {
         return result;
     }
 
+    // register the token and link it to the user
     private String issueToken(UriInfo context, String username) {
-        /* registrare il token e associarlo all'utenza */
-        String token = username + UUID.randomUUID().toString();
-        /* per esempio */
 
-//        JWT        
-//        Key key = JWTHelpers.getInstance().getJwtKey();
-//        String token = Jwts.builder()
-//                .setSubject(username)
-//                .setIssuer(context.getAbsolutePath().toString())
-//                .setIssuedAt(new Date())
-//                .setExpiration(Date.from(LocalDateTime.now().plusMinutes(15L).atZone(ZoneId.systemDefault()).toInstant()))
-//                .signWith(key)
-//                .compact();
+        SecretKey key = JWTHelpers.getInstance().getJwtKey();
+        String token = Jwts.builder()
+               .setSubject(username)
+               .setIssuer(context.getAbsolutePath().toString())
+                .setIssuedAt(new Date())
+               .setExpiration(Date.from(LocalDateTime.now().plusMinutes(15L).atZone(ZoneId.systemDefault()).toInstant()))
+                .signWith(SignatureAlgorithm.HS256, key)
+                .compact();
         return token;
     }
 
