@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ago 05, 2020 alle 15:30
+-- Creato il: Ago 05, 2020 alle 15:33
 -- Versione del server: 10.4.13-MariaDB
 -- Versione PHP: 7.2.32
 
@@ -59,7 +59,7 @@ INSERT INTO `login` (`username`, `password`) VALUES
 CREATE TABLE `palinsesto` (
   `id_palinsesto` int(11) NOT NULL,
   `id_canale` int(11) NOT NULL,
-  `id_programma` varchar(500) NOT NULL,
+  `id_programma` int(11) NOT NULL,
   `ora_inizio` time NOT NULL,
   `ora_fine` time NOT NULL,
   `fascia_oraria` varchar(120) NOT NULL,
@@ -103,7 +103,9 @@ ALTER TABLE `login`
 -- Indici per le tabelle `palinsesto`
 --
 ALTER TABLE `palinsesto`
-  ADD PRIMARY KEY (`id_palinsesto`);
+  ADD PRIMARY KEY (`id_palinsesto`),
+  ADD KEY `id_canale` (`id_canale`),
+  ADD KEY `id_programma` (`id_programma`);
 
 --
 -- Indici per le tabelle `programma`
@@ -132,6 +134,17 @@ ALTER TABLE `palinsesto`
 --
 ALTER TABLE `programma`
   MODIFY `id_programma` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Limiti per le tabelle scaricate
+--
+
+--
+-- Limiti per la tabella `palinsesto`
+--
+ALTER TABLE `palinsesto`
+  ADD CONSTRAINT `palinsesto_ibfk_1` FOREIGN KEY (`id_canale`) REFERENCES `canale` (`id_canale`),
+  ADD CONSTRAINT `palinsesto_ibfk_2` FOREIGN KEY (`id_programma`) REFERENCES `programma` (`id_programma`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
