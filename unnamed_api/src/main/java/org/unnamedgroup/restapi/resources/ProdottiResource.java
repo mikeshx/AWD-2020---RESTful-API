@@ -31,8 +31,8 @@ public class ProdottiResource {
         List<URI> l = new ArrayList();
         for (int i = 1; i <= 3; ++i) {
             URI uri = uriinfo.getBaseUriBuilder()
-                    .path(FattureResource.class)
-                    .path(FattureResource.class, "getItem")
+                    .path(CanaliResource.class)
+                    .path(CanaliResource.class, "getItem")
                     .build(2020, i);
             l.add(uri);
         }

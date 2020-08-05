@@ -8,7 +8,7 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import org.unnamedgroup.restapi.jackson.ObjectMapperContextResolver;
-import org.unnamedgroup.restapi.resources.FattureResource;
+import org.unnamedgroup.restapi.resources.CanaliResource;
 import org.unnamedgroup.restapi.resources.ProdottiResource;
 import org.unnamedgroup.restapi.security.AutenticazioneResource;
 import org.unnamedgroup.restapi.security.LoggedFilter;
@@ -26,7 +26,7 @@ public class RESTApp extends Application {
         HashSet<Class<?>> c = new HashSet<>();
         //aggiungiamo tutte le *root resurces* (cioè quelle
         //con l'annotazione Path) che vogliamo pubblicare
-        c.add(FattureResource.class);
+        c.add(CanaliResource.class);
         c.add(ProdottiResource.class);
         c.add(AutenticazioneResource.class);
 
