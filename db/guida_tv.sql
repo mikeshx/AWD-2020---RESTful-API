@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 27, 2020 alle 17:20
--- Versione del server: 10.4.11-MariaDB
--- Versione PHP: 7.4.6
+-- Creato il: Ago 05, 2020 alle 15:30
+-- Versione del server: 10.4.13-MariaDB
+-- Versione PHP: 7.2.32
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +20,17 @@ SET time_zone = "+00:00";
 --
 -- Database: `guida_tv`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `canale`
+--
+
+CREATE TABLE `canale` (
+  `id_canale` int(11) NOT NULL,
+  `nome` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -46,9 +57,13 @@ INSERT INTO `login` (`username`, `password`) VALUES
 --
 
 CREATE TABLE `palinsesto` (
-  `nome_canale` int(11) NOT NULL,
-  `id_programma` int(11) NOT NULL,
-  `giorno_messa_in_onda` int(11) NOT NULL
+  `id_palinsesto` int(11) NOT NULL,
+  `id_canale` int(11) NOT NULL,
+  `id_programma` varchar(500) NOT NULL,
+  `ora_inizio` time NOT NULL,
+  `ora_fine` time NOT NULL,
+  `fascia_oraria` varchar(120) NOT NULL,
+  `giorno_messa_in_onda` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -59,14 +74,13 @@ CREATE TABLE `palinsesto` (
 
 CREATE TABLE `programma` (
   `id_programma` int(11) NOT NULL,
+  `titolo` varchar(500) NOT NULL,
   `descrizione` varchar(500) NOT NULL,
   `genere` int(255) NOT NULL,
-  `ora_inizio` time NOT NULL,
-  `ora_fine` time NOT NULL,
-  `scheda_approfondimento` varchar(800) NOT NULL,
+  `scheda_approfondimento` varchar(800) DEFAULT NULL,
   `is_serie` tinyint(1) NOT NULL,
-  `num_stagione_serie` int(11) NOT NULL,
-  `num_episodio_serie` int(11) NOT NULL
+  `num_stagione_serie` int(11) DEFAULT NULL,
+  `num_episodio_serie` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Informazioni relative a un singolo programma';
 
 --
@@ -74,10 +88,22 @@ CREATE TABLE `programma` (
 --
 
 --
+-- Indici per le tabelle `canale`
+--
+ALTER TABLE `canale`
+  ADD PRIMARY KEY (`id_canale`);
+
+--
 -- Indici per le tabelle `login`
 --
 ALTER TABLE `login`
   ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indici per le tabelle `palinsesto`
+--
+ALTER TABLE `palinsesto`
+  ADD PRIMARY KEY (`id_palinsesto`);
 
 --
 -- Indici per le tabelle `programma`
@@ -88,6 +114,18 @@ ALTER TABLE `programma`
 --
 -- AUTO_INCREMENT per le tabelle scaricate
 --
+
+--
+-- AUTO_INCREMENT per la tabella `canale`
+--
+ALTER TABLE `canale`
+  MODIFY `id_canale` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT per la tabella `palinsesto`
+--
+ALTER TABLE `palinsesto`
+  MODIFY `id_palinsesto` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT per la tabella `programma`
