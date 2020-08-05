@@ -13,7 +13,7 @@ public class DBManager {
         Connection conn = null;
 
         try {
-            String url = "jdbc:mysql://localhost/guida_tv";
+            String url = "jdbc:mysql://localhost/guida_tv?serverTimezone=UTC";
             Class.forName ("com.mysql.cj.jdbc.Driver").newInstance ();
             conn = DriverManager.getConnection (url, "root", "");
 

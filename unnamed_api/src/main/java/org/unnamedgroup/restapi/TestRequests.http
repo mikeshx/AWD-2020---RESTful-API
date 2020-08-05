@@ -1,3 +1,2 @@
 // Login
-POST http://localhost:8080/unnamed_api-1.0-SNAPSHOT/rest/auth/login?username=admin&password=admin
-Content-Type: application/x-www-form-urlencoded
+GET http://localhost:8080/rest/fatture/count

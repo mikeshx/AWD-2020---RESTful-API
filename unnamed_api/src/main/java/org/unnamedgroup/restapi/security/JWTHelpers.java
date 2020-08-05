@@ -1,5 +1,8 @@
 package org.unnamedgroup.restapi.security;
 
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +32,7 @@ public class JWTHelpers {
     }
 
     public SecretKey getJwtKey() {
+        jwtKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         return jwtKey;
     }
 

@@ -21,4 +21,6 @@ public class testClass {
         System.out.println(AutenticazioneResource.authenticate("admin", "admin"));
     }
 
+
+
 }

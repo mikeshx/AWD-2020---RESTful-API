@@ -1,6 +1,15 @@
 package org.unnamedgroup.restapi.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import sun.java2d.pipe.SpanShapeRenderer;
+
 import java.io.IOException;
+import java.security.Key;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -35,29 +44,42 @@ public class LoggedFilter implements ContainerRequestFilter {
             try {
                 //validiamo il token
                 String user = validateToken(token);
+
                 if (user != null) {
                     //inseriamo nel contesto i risultati dell'autenticazione
                     //per farli usare dai nostri metodi restful
                     requestContext.setProperty("token", token);
                     requestContext.setProperty("user", user);
                 } else {
-                    //se non va bene... 
                     requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
                 }
             } catch (Exception e) {
                 requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+
             }
         } else {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
         }
     }
 
-    private String validateToken(String token) {
-//      //JWT                
-//      Key key = AppGlobals.getInstance().getJwtKey();
-//      Jws<Claims> jwsc = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+    // Verify the token expiration by checking if its date is still valid. Untested.
+    private String validateToken(String token) throws ParseException {
 
-        return "pippo"; //andrebbe derivato dal token!
+        Key key = JWTHelpers.getInstance().getJwtKey();
+        Jws<Claims> jwsc = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+
+     // Get the expiration date and check if the token is valid
+     Date date = jwsc.getBody().getExpiration();
+
+     SimpleDateFormat formatter = new SimpleDateFormat();
+     String strDate = formatter.format(date);
+
+        if (new SimpleDateFormat("MM/yyyy").parse(strDate).before(new Date())) {
+            return jwsc.getBody().getIssuer();
+        }
+        return null;
     }
 
 }
+
+//TODO: ADD DB
