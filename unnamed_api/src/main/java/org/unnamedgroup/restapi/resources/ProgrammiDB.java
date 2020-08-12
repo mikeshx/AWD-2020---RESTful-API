@@ -8,9 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 public  class ProgrammiDB {
 
@@ -35,13 +32,40 @@ public  class ProgrammiDB {
              cercato= new Programma(rs.getString("titolo"), rs.getString("descrizione"),
                     rs.getString("genere"), rs.getString("scheda_approfondimento"),
                     rs.getBoolean("is_serie"), rs.getInt("num_episodio_serie"),
-                            rs.getInt("num_stagione_serie"));
+                            rs.getInt("num_stagione_serie"), "http://localhost:8080/unnamed_api-1.0-SNAPSHOT/rest/programmi/"+id);
 
 
         }
 
         dbConnection.close();
         return cercato;
+    }
+
+    public static String getTitolo(int id) throws SQLException, ParseException {
+
+            String titolo = "";
+        Programma cercato = new Programma();
+        Connection dbConnection = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+
+        dbConnection = DBManager.getDBConenction();
+        pst = dbConnection.prepareStatement("SELECT titolo  FROM programma WHERE id_programma = ? ");
+
+
+        pst.setInt(1, id);
+
+
+        rs = pst.executeQuery();
+
+        if (rs.next()) {
+            titolo= rs.getString("titolo");
+
+
+        }
+
+        dbConnection.close();
+        return titolo;
     }
 
 }

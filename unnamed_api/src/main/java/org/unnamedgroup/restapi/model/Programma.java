@@ -7,7 +7,7 @@ package org.unnamedgroup.restapi.model;
  * @author Giuseppe
  */
 public class Programma {
-
+    private int id;
     private String titolo;
     private String descrizione;
     private String genere;
@@ -15,10 +15,12 @@ public class Programma {
     private boolean is_serie;
     private int num_stagione_serie;
     private int num_episodio_serie;
+    private String url_programma;
 
-public Programma() {}
+    public Programma() {}
 
     public Programma(String titolo, String descrizione, String genere, String scheda_approfondimento, boolean is_serie, int num_stagione_serie, int num_episodio_serie) {
+
         this.titolo = titolo;
         this.descrizione = descrizione;
         this.genere = genere;
@@ -26,6 +28,18 @@ public Programma() {}
         this.is_serie = is_serie;
         this.num_stagione_serie = num_stagione_serie;
         this.num_episodio_serie = num_episodio_serie;
+    }
+
+    public Programma(String titolo, String descrizione, String genere, String scheda_approfondimento, boolean is_serie, int num_stagione_serie, int num_episodio_serie, String url_programma) {
+
+        this.titolo = titolo;
+        this.descrizione = descrizione;
+        this.genere = genere;
+        this.scheda_approfondimento = scheda_approfondimento;
+        this.is_serie = is_serie;
+        this.num_stagione_serie = num_stagione_serie;
+        this.num_episodio_serie = num_episodio_serie;
+        this.url_programma = url_programma;
     }
 
     public String getGenere() {
@@ -82,5 +96,25 @@ public Programma() {}
 
     public void setNum_episodio_serie(int num_episodio_serie) {
         this.num_episodio_serie = num_episodio_serie;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitoloFromId(int id){
+    return this.titolo;
+    }
+
+    public String getUrl_programma() {
+        return url_programma;
+    }
+
+    public void setUrl_programma(String url_programma) {
+        this.url_programma = url_programma;
     }
 }

@@ -18,6 +18,7 @@ public class ProgrammiResource {
     @Produces("application/json")
     public Response getProgrammi(@PathParam("id") int id) throws SQLException, ParseException {
         Programma prog; //per esempio
+
         prog = ProgrammiDB.getProgramma(id);
         return Response.ok(prog).build();
     }

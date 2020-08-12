@@ -8,7 +8,7 @@ import java.sql.Time;
  * @author Giuseppe
  */
 public class Palinsesto {
-
+    private int id_palinsesto;
     private int id_canale;
     private int id_programma;
     private Time ora_inizio;
@@ -19,6 +19,7 @@ public class Palinsesto {
     public Palinsesto(){}
 
     public Palinsesto(int id_canale, int id_programma, Time ora_inizio, Time ora_fine, String fascia_oraria, Date giorno_messa_in_onda) {
+
         this.id_canale = id_canale;
         this.id_programma = id_programma;
         this.ora_inizio = ora_inizio;
@@ -26,6 +27,18 @@ public class Palinsesto {
         this.fascia_oraria = fascia_oraria;
         this.giorno_messa_in_onda = giorno_messa_in_onda;
     }
+
+    public Palinsesto(int id_palinsesto, int id_canale, int id_programma, Time ora_inizio, Time ora_fine, String fascia_oraria, Date giorno_messa_in_onda) {
+        this.id_palinsesto = id_palinsesto;
+        this.id_canale = id_canale;
+        this.id_programma = id_programma;
+        this.ora_inizio = ora_inizio;
+        this.ora_fine = ora_fine;
+        this.fascia_oraria = fascia_oraria;
+        this.giorno_messa_in_onda = giorno_messa_in_onda;
+    }
+
+
 
     public int getId_canale() {
         return id_canale;
@@ -73,5 +86,13 @@ public class Palinsesto {
 
     public void setGiorno_messa_in_onda(Date giorno_messa_in_onda) {
         this.giorno_messa_in_onda = giorno_messa_in_onda;
+    }
+
+    public int getId_palinsesto() {
+        return id_palinsesto;
+    }
+
+    public void setId_palinsesto(int id_palinsesto) {
+        this.id_palinsesto = id_palinsesto;
     }
 }

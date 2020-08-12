@@ -27,8 +27,8 @@ public class RESTApp extends Application {
         HashSet<Class<?>> c = new HashSet<>();
         //aggiungiamo tutte le *root resurces* (cioè quelle
         //con l'annotazione Path) che vogliamo pubblicare
-        c.add(CanaliResource.class);
 
+        c.add(CanaliResource.class);
         c.add(AutenticazioneResource.class);
         c.add(PalinsestoResource.class);
         c.add(ProgrammiResource.class);
