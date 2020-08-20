@@ -2,9 +2,7 @@ package org.unnamedgroup.restapi.security;
 
 import org.apache.commons.dbutils.DbUtils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DBManager {
 
@@ -26,5 +24,21 @@ public class DBManager {
             e.printStackTrace();
         }
         return conn;
+    }
+
+    // Check if the current user is admin
+    public static boolean checkAdmin(String username) throws SQLException {
+
+        Connection dbConnection = DBManager.getDBConenction();
+        PreparedStatement pst = dbConnection.prepareStatement("SELECT is_admin FROM login WHERE username = ?");
+        pst.setString(1, username);
+        boolean result = false;
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            result = rs.getBoolean("is_admin");
+        }
+        dbConnection.close();
+        return result;
     }
 }

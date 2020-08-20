@@ -32,9 +32,14 @@ public class LoggedFilter implements ContainerRequestFilter {
         String token = null;
         //come esempio, proviamo a cercare il token in vari punti, in ordine di priorità
         //in un'applicazione reale, potremmo scegliere una sola modalità
+
+        boolean test = requestContext.getCookies().containsKey("token");
+        System.out.println(test);
+
         String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            token = authorizationHeader.substring("Bearer".length()).trim();
+                token = authorizationHeader.substring("Bearer".length()).trim();
+
         } else if (requestContext.getCookies().containsKey("token")) {
             token = requestContext.getCookies().get("token").getValue();
         } else if (requestContext.getUriInfo().getQueryParameters().containsKey("token")) {

@@ -2,7 +2,6 @@ package org.unnamedgroup.restapi.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import org.apache.commons.dbutils.DbUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -12,19 +11,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import javax.xml.bind.DatatypeConverter;
 
@@ -32,6 +24,39 @@ import io.jsonwebtoken.*;
 
 @Path("auth")
 public class AutenticazioneResource {
+
+    /** ADD A NEW CHANNEL
+     * @return **/
+    @POST
+    @Path("/canali")
+    //@Path("canali/{descrizione: ^[a-zA-Z]+$}/{genere: ^[a-zA-Z]+$}/{ora_inizio: ^[a-zA-Z]+$}/{ora_fine: ^[a-zA-Z]+$}/" +
+    //"{scheda_approfondimento: ^[a-zA-Z]+$}/{is_serie: [0-1]}/{num_stagione_serie: [0-9]+}/{num_episodio: [0-9]+}")
+    /**
+     public void addChannel(
+     @Context HttpServletRequest request,
+     @PathParam("descrizione") String descrizione,
+     @PathParam("genere") String genere,
+     @PathParam("ora_inizio") String ora_inizio,
+     @PathParam("ora_fine") String ora,
+     @PathParam("scheda_approfondimento") String scheda_approfondimento,
+     //TODO: Cast int to boolean later
+     @PathParam("is_serie") int is_serie,
+     @PathParam("num_stagione_serie") int num_stagione_serie,
+     @PathParam("num_episodio") int num_episodio,
+     )
+     **/
+
+    public Response addChannel(@Context HttpServletRequest request)
+    {
+        try {
+            //estraiamo i dati inseriti dal nostro LoggedFilter...
+            String token = (String) request.getAttribute("user");
+
+            return Response.noContent().build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
 
     // POST ==> /rest/auth/login?username=admin&password=admin
 
@@ -51,9 +76,13 @@ public class AutenticazioneResource {
                 //Gerenate a random id for the issueToken function
                 UUID random_id = UUID.randomUUID();
 
-                String authToken = issueToken(random_id.toString(), uriinfo, username, 800000);
+                String authToken = issueToken(uriinfo, username);
+
+                //old issue_token
+                //String authToken = issueToken(random_id.toString(), uriinfo, username, 800000);
 
                 // return the token on response
+
                 return Response.ok(authToken)
                         .cookie(new NewCookie("token", authToken))
                         .header(HttpHeaders.AUTHORIZATION, "Bearer" + authToken).build();
@@ -112,15 +141,30 @@ public class AutenticazioneResource {
         return result;
     }
 
-    public static boolean authenticate_true() { return true; }
-
     // The secret key. This should be in a property file NOT under source
     // control and not hard coded in real life. We're putting it here for
     // simplicity.
     private static String SECRET_KEY = "oeRaYY7Wo24sDqKSX3IM9ASGmdGPmkTd9jo1QTy4b7P9Ze5_9hKolVX8xNrQDcNRfVEdTZNOuOyqEGhXEbdJI-ZQ19k_o9MI0y3eZN2lp9jow55FfXMiINEdt1XR85VipRLSOkT6kSpzs2x-jbLDiz9iFVzkd81YKxMgPA7VfZeQUm4n-mOmnWMaVX30zGFU4L3oPBctYKkl4dYfqYWqRNfrgPJVi5DGFjywgxx0ASEiJHtV72paI3fDR2XwlSkyhhmY-ICjCRmsJN4fX1pdoL8a18-aQrvyu4j0Os6dVPYIoPvvY0SAZtWYKHfM15g7A3HD4cVREf9cUsprCRK93w";
 
+    private String issueToken(UriInfo context, String username) {
+        /* registrare il token e associarlo all'utenza */
+        String token = username + UUID.randomUUID().toString();
+        /* per esempio */
+
+//        JWT
+//        Key key = JWTHelpers.getInstance().getJwtKey();
+//        String token = Jwts.builder()
+//                .setSubject(username)
+//                .setIssuer(context.getAbsolutePath().toString())
+//                .setIssuedAt(new Date())
+//                .setExpiration(Date.from(LocalDateTime.now().plusMinutes(15L).atZone(ZoneId.systemDefault()).toInstant()))
+//                .signWith(key)
+//                .compact();
+        return token;
+    }
+
     //Sample method to construct a JWT
-    public static String issueToken(String id, UriInfo context, String subject, long ttlMillis) {
+    public static String issueToken_old(String id, UriInfo context, String subject, long ttlMillis) {
 
         //The JWT signature algorithm we will be using to sign the token
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -153,4 +197,5 @@ public class AutenticazioneResource {
     private void revokeToken(String token) {
         /* invalidate il token */
     }
+
 }

@@ -31,8 +31,13 @@ public class JWTHelpers {
         }
     }
 
+    /**
     public SecretKey getJwtKey() {
         jwtKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        return jwtKey;
+    } */
+
+    public SecretKey getJwtKey() {
         return jwtKey;
     }
 
