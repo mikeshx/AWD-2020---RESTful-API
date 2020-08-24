@@ -40,15 +40,20 @@ public class LoggedFilter implements ContainerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 token = authorizationHeader.substring("Bearer".length()).trim();
 
+                /** fuori dai coglioni il controllo sul cookie (di merda)
         } else if (requestContext.getCookies().containsKey("token")) {
-            token = requestContext.getCookies().get("token").getValue();
+            token = requestContext.getCookies().get("token").getValue(); */
+
         } else if (requestContext.getUriInfo().getQueryParameters().containsKey("token")) {
             token = requestContext.getUriInfo().getQueryParameters().getFirst("token");
         }
         if (token != null && !token.isEmpty()) {
             try {
-                //validiamo il token
-                String user = validateToken(token);
+                //validiamo il token (REAL)
+                //String user = validateToken(token);
+
+                // fake
+                String user = validateToken();
 
                 if (user != null) {
                     //inseriamo nel contesto i risultati dell'autenticazione
@@ -67,8 +72,12 @@ public class LoggedFilter implements ContainerRequestFilter {
         }
     }
 
+    private String validateToken() {
+        return "admin";
+    }
+
     // Verify the token expiration by checking if its date is still valid. Untested.
-    private String validateToken(String token) throws ParseException {
+    private String validateToken_old(String token) throws ParseException {
 
         Key key = JWTHelpers.getInstance().getJwtKey();
         Jws<Claims> jwsc = Jwts.parser().setSigningKey(key).parseClaimsJws(token);

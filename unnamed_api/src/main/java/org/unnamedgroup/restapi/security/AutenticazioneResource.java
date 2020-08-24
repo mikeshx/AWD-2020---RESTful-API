@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -21,45 +23,48 @@ import javax.ws.rs.core.*;
 import javax.xml.bind.DatatypeConverter;
 
 import io.jsonwebtoken.*;
+import org.unnamedgroup.restapi.model.PalinsestoCanaliProgrammi;
+import org.unnamedgroup.restapi.resources.CanaliDB;
+import org.unnamedgroup.restapi.resources.PalinsestoDB;
 
 @Path("auth")
 public class AutenticazioneResource {
 
-    /** ADD A NEW CHANNEL
-     * @return **/
+    /** ADD A NEW CHANNEL */
+    // POST: http://localhost:8080/unnamed_api-1.0-SNAPSHOT/rest/auth/canali/asd/asd/asd/asd/asd/11/11/11
+
+    // TODO: change the url to 'auth/{SID}/canali' istead of 'auth/canali'
+    @Logged
+    @Path("canali/{descrizione: [a-z0-9]+}/{genere: [a-z0-9]+}/{ora_inizio: [a-z0-9]+}/{ora_fine: [a-z0-9]+}/{scheda_approfondimento: [a-z0-9]+}" +
+            "/{is_serie: [0-9]+}/{num_stagione_serie: [0-9]+}/{num_episodio: [0-9]+}")
     @POST
-    @Path("/canali")
-    //@Path("canali/{descrizione: ^[a-zA-Z]+$}/{genere: ^[a-zA-Z]+$}/{ora_inizio: ^[a-zA-Z]+$}/{ora_fine: ^[a-zA-Z]+$}/" +
-    //"{scheda_approfondimento: ^[a-zA-Z]+$}/{is_serie: [0-1]}/{num_stagione_serie: [0-9]+}/{num_episodio: [0-9]+}")
-    /**
-     public void addChannel(
-     @Context HttpServletRequest request,
-     @PathParam("descrizione") String descrizione,
-     @PathParam("genere") String genere,
-     @PathParam("ora_inizio") String ora_inizio,
-     @PathParam("ora_fine") String ora,
-     @PathParam("scheda_approfondimento") String scheda_approfondimento,
-     //TODO: Cast int to boolean later
-     @PathParam("is_serie") int is_serie,
-     @PathParam("num_stagione_serie") int num_stagione_serie,
-     @PathParam("num_episodio") int num_episodio,
-     )
-     **/
+    @Produces("application/json")
+    public Response addChannel(
+            @PathParam("descrizione") String descrizione,
+            @PathParam("genere") String genere,
+            @PathParam("ora_inizio") String ora_inizio,
+            @PathParam("ora_fine") String ora_fine,
+            @PathParam("scheda_approfondimento") String scheda_approfondimento,
+            @PathParam("is_serie") int is_serie, // accepts only values between 0-1
+            @PathParam("num_stagione_serie") int num_stagione_serie,
+            @PathParam("num_episodio") String num_episodio) throws SQLException, ParseException {
 
-    public Response addChannel(@Context HttpServletRequest request)
-    {
-        try {
-            //estraiamo i dati inseriti dal nostro LoggedFilter...
-            String token = (String) request.getAttribute("user");
+        // This will be set to true if 'is_serie' is equal to 1 (te value is passed as int)
+        boolean is_serie_bool = false;
+        if (is_serie == 1) is_serie_bool = true;
 
-            return Response.noContent().build();
-        } catch (Exception e) {
-            return Response.serverError().build();
+        // Now we check if the current user is admin
+        // TODO: get the user name from a stored variable
+        if (!DBManager.checkAdmin("admin")) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+
+
+
+        return Response.ok(num_episodio).build();
     }
 
     // POST ==> /rest/auth/login?username=admin&password=admin
-
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
