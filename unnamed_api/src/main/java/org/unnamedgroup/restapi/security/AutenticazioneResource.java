@@ -19,6 +19,7 @@ import java.util.UUID;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.*;
 import javax.xml.bind.DatatypeConverter;
 
@@ -31,37 +32,32 @@ import org.unnamedgroup.restapi.resources.PalinsestoDB;
 public class AutenticazioneResource {
 
     /** ADD A NEW CHANNEL */
-    // POST: http://localhost:8080/unnamed_api-1.0-SNAPSHOT/rest/auth/canali/asd/asd/asd/asd/asd/11/11/11
+    // POST: http://localhost:8080/unnamed_api-1.0-SNAPSHOT/rest/auth/canali/asd
 
     // TODO: change the url to 'auth/{SID}/canali' istead of 'auth/canali'
     @Logged
-    @Path("canali/{descrizione: [a-z0-9]+}/{genere: [a-z0-9]+}/{ora_inizio: [a-z0-9]+}/{ora_fine: [a-z0-9]+}/{scheda_approfondimento: [a-z0-9]+}" +
-            "/{is_serie: [0-9]+}/{num_stagione_serie: [0-9]+}/{num_episodio: [0-9]+}")
+    @Path("canali/{nome_canale: [a-z0-9]+}")
     @POST
     @Produces("application/json")
-    public Response addChannel(
-            @PathParam("descrizione") String descrizione,
-            @PathParam("genere") String genere,
-            @PathParam("ora_inizio") String ora_inizio,
-            @PathParam("ora_fine") String ora_fine,
-            @PathParam("scheda_approfondimento") String scheda_approfondimento,
-            @PathParam("is_serie") int is_serie, // accepts only values between 0-1
-            @PathParam("num_stagione_serie") int num_stagione_serie,
-            @PathParam("num_episodio") String num_episodio) throws SQLException, ParseException {
+    public Response addChannel(ContainerRequestContext requestContext, @PathParam("nome_canale") String nome_canale) throws SQLException, ParseException {
 
-        // This will be set to true if 'is_serie' is equal to 1 (te value is passed as int)
-        boolean is_serie_bool = false;
-        if (is_serie == 1) is_serie_bool = true;
-
-        // Now we check if the current user is admin
-        // TODO: get the user name from a stored variable
-        if (!DBManager.checkAdmin("admin")) {
+        // We get the username from the coookies
+        String username = requestContext.getCookies().get("username").getValue();
+        if (username.isEmpty()) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
+        // Now we check if the current user is admin
+        if (!DBManager.checkAdmin(username)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
 
+        //TODO: check if channel name already exists
 
-        return Response.ok(num_episodio).build();
+        // Add the new channel
+        DBManager.addChannel(nome_canale);
+
+        return Response.ok(nome_canale).build();
     }
 
     // POST ==> /rest/auth/login?username=admin&password=admin
@@ -90,6 +86,7 @@ public class AutenticazioneResource {
 
                 return Response.ok(authToken)
                         .cookie(new NewCookie("token", authToken))
+                        .cookie(new NewCookie("username", username))
                         .header(HttpHeaders.AUTHORIZATION, "Bearer" + authToken).build();
 
             } else {

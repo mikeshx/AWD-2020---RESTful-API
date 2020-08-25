@@ -43,20 +43,14 @@ public class DBManager {
     }
 
     // Add a new channel to the database
-    public static void addChannel(String descrizione, String genere, String ora_inizio, String ora_fine, String scheda_appr,
-                                  boolean is_serie, int num_stagione) {
+    public static void addChannel(String nome_canale) {
         try {
 
             Connection dbConnection = DBManager.getDBConenction();
-            String query = " insert into users (first_name, last_name, date_created, is_admin, num_points)"
-                    + " values (?, ?, ?, ?, ?)";
+            String query = " INSERT INTO canale (id_canale, nome) VALUES (NULL, ?)";
 
             PreparedStatement preparedStmt = dbConnection.prepareStatement(query);
-            preparedStmt.setString (1, "Barney");
-            preparedStmt.setString (2, "Rubble");
-           // preparedStmt.setDate   (3, startDate);
-            preparedStmt.setBoolean(4, false);
-            preparedStmt.setInt    (5, 5000);
+            preparedStmt.setString (1, nome_canale);
 
             preparedStmt.execute();
             dbConnection.close();

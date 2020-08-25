@@ -40,7 +40,7 @@ public class LoggedFilter implements ContainerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 token = authorizationHeader.substring("Bearer".length()).trim();
 
-                /** fuori dai coglioni il controllo sul cookie (di merda)
+        /** fuori dai coglioni il controllo sul cookie (di merda)
         } else if (requestContext.getCookies().containsKey("token")) {
             token = requestContext.getCookies().get("token").getValue(); */
 
