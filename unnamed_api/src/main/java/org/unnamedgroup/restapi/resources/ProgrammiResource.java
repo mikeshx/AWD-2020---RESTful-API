@@ -1,6 +1,7 @@
 package org.unnamedgroup.restapi.resources;
 
 import org.unnamedgroup.restapi.model.Palinsesto;
+import org.unnamedgroup.restapi.model.PalinsestoCanaliProgrammi;
 import org.unnamedgroup.restapi.model.Programma;
 
 import javax.ws.rs.GET;
@@ -20,6 +21,17 @@ public class ProgrammiResource {
         Programma prog; //per esempio
 
         prog = ProgrammiDB.getProgramma(id);
+        return Response.ok(prog).build();
+    }
+
+    @Path("{id: [a-z0-9]+}/episodi")
+    @GET
+    @Produces("application/json")
+    public Response getEpisodiProgramma(@PathParam("id") int id) throws SQLException, ParseException {
+        ArrayList<PalinsestoCanaliProgrammi> prog; //per esempio
+
+        prog = ProgrammiDB.getEpisodiProgramma(id);
+        if (prog.isEmpty()) return Response.ok("error 400").build();
         return Response.ok(prog).build();
     }
 }

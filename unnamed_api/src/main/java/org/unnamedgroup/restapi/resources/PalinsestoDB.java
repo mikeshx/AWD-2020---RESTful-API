@@ -94,7 +94,7 @@ public class PalinsestoDB {
             Programma prog_temp =  ProgrammiDB.getProgramma(pal_temp.getId_programma());
 
             PalinsestoCanaliProgrammi temp = new PalinsestoCanaliProgrammi(CanaliDB.getNome(pal_temp.getId_canale()), prog_temp.getTitolo(), prog_temp.getGenere(),
-                    pal_temp.getOra_inizio(), pal_temp.getOra_fine(), prog_temp.getUrl_programma());
+                    pal_temp.getOra_inizio(), pal_temp.getOra_fine(), prog_temp.getUrl_programma(), prog_temp.isIs_serie(), prog_temp.getNum_stagione_serie(), prog_temp.getNum_episodio_serie());
             result.add(temp);
         }
 

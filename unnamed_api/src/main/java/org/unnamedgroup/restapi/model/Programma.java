@@ -106,9 +106,7 @@ public class Programma {
         this.id = id;
     }
 
-    public String getTitoloFromId(int id){
-    return this.titolo;
-    }
+
 
     public String getUrl_programma() {
         return url_programma;
