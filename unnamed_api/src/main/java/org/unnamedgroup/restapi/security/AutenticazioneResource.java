@@ -41,7 +41,12 @@ public class AutenticazioneResource {
     @Produces("application/json")
     public Response addChannel(ContainerRequestContext requestContext, @PathParam("nome_canale") String nome_canale) throws SQLException, ParseException {
 
-        // We get the username from the coookies
+        // Check if a username cookie exists, otherwise we return unauthorized
+        if (!requestContext.getCookies().containsKey("username")) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // If the username is empty we return unauthorized
         String username = requestContext.getCookies().get("username").getValue();
         if (username.isEmpty()) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -52,12 +57,17 @@ public class AutenticazioneResource {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        //TODO: check if channel name already exists
+        // Check if the channel exists
+        // According to RFC 7231, a 303 See Other MAY be used If the result of processing
+        // a POST would be equivalent to a representation of an existing resource.
+        if (DBManager.checkIfChannelExists(nome_canale)) {
+            return Response.status(303).build();
+        }
 
         // Add the new channel
-        DBManager.addChannel(nome_canale);
-
-        return Response.ok(nome_canale).build();
+        if (DBManager.addChannel(nome_canale)) {
+            return Response.ok().build();
+        } else return Response.status(409).build();
     }
 
     // POST ==> /rest/auth/login?username=admin&password=admin

@@ -1,22 +1,19 @@
 package org.unnamedgroup.restapi.security;
 
-import org.apache.commons.dbutils.DbUtils;
-
 import java.sql.*;
 
 public class DBManager {
 
-    public static Connection getDBConenction(){
+    public static Connection getDBConenction() {
 
         Connection conn = null;
 
         try {
             String url = "jdbc:mysql://localhost/guida_tv?serverTimezone=UTC";
-            Class.forName ("com.mysql.cj.jdbc.Driver").newInstance ();
-            conn = DriverManager.getConnection (url, "root", "");
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+            conn = DriverManager.getConnection(url, "root", "");
 
         } catch (SQLException | ClassNotFoundException ex) {
-            // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -43,21 +40,39 @@ public class DBManager {
     }
 
     // Add a new channel to the database
-    public static void addChannel(String nome_canale) {
+    public static boolean addChannel(String nome_canale) {
         try {
 
             Connection dbConnection = DBManager.getDBConenction();
             String query = " INSERT INTO canale (id_canale, nome) VALUES (NULL, ?)";
 
             PreparedStatement preparedStmt = dbConnection.prepareStatement(query);
-            preparedStmt.setString (1, nome_canale);
+            preparedStmt.setString(1, nome_canale);
 
-            preparedStmt.execute();
+            int status = preparedStmt.executeUpdate();
             dbConnection.close();
-        }
-        catch (Exception e)
-        {
+
+            // If the rows are > 0 it means that the query has been executed successfully
+            if (status > 0) return true;
+
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+        return false;
+    }
+
+    // Check if the name of a channel already exists
+    public static boolean checkIfChannelExists(String nome_canale) throws SQLException {
+
+        Connection dbConnection = DBManager.getDBConenction();
+
+        PreparedStatement st = dbConnection.prepareStatement("select * from canale where nome = ?");
+        st.setString(1, nome_canale);
+
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            return true;
+        }
+        return false;
     }
 }
