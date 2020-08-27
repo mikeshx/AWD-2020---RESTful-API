@@ -75,4 +75,24 @@ public class DBManager {
         }
         return false;
     }
+
+    // Update the channel name by id
+    public static boolean updateChannelInfo(int id_canale, String nuovo_nome) throws SQLException {
+
+        Connection dbConnection = DBManager.getDBConenction();
+        String query = "update canale set nome = ? where id_canale = ?";
+
+        PreparedStatement preparedStmt = dbConnection.prepareStatement(query);
+        preparedStmt.setString(1, nuovo_nome);
+        preparedStmt.setInt(2, id_canale);
+
+        int status = preparedStmt.executeUpdate();
+        dbConnection.close();
+
+        // If the rows are > 0 it means that the query has been executed successfully
+        if (status > 0) return true;
+
+        return false;
+    }
 }
+

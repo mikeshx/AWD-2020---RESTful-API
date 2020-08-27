@@ -70,6 +70,49 @@ public class AutenticazioneResource {
         } else return Response.status(409).build();
     }
 
+    /** EDIT A CHANNEL BY ID */
+    // POST: http://localhost:8080/unnamed_api-1.0-SNAPSHOT/rest/auth/canali/asd
+
+    // TODO: change the url to 'auth/{SID}/canali' istead of 'auth/canali'
+    @Logged
+    @Path("canali/{nome_canale: [a-z0-9]+}/{id: [0-9]+}/{nuovo_nome: [a-z0-9]+}")
+    @PUT
+    @Produces("application/json")
+    public Response addChannel(ContainerRequestContext requestContext, @PathParam("nome_canale") String nome_canale,
+                               @PathParam("id") int id_canale, @PathParam("nuovo_nome") String nuovo_nome) throws SQLException, ParseException {
+
+        // Check if a username cookie exists, otherwise we return unauthorized
+        if (!requestContext.getCookies().containsKey("username")) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // If the username is empty we return unauthorized
+        String username = requestContext.getCookies().get("username").getValue();
+        if (username.isEmpty()) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // Now we check if the current user is admin
+        if (!DBManager.checkAdmin(username)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // Check if the channel exists
+        // In this case we return a 404 instead of 309 because the resource...
+        // ...we want to edit it's not available
+        if (!DBManager.checkIfChannelExists(nome_canale)) {
+            return Response.status(404).build();
+        }
+
+        // Update the channel with the new name
+        // returns 200 (ok)
+        if (DBManager.updateChannelInfo(id_canale, nuovo_nome)) {
+            return Response.ok().build();
+        }
+
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
     // POST ==> /rest/auth/login?username=admin&password=admin
     @POST
     @Path("/login")
