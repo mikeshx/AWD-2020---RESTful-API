@@ -2,14 +2,51 @@ package org.unnamedgroup.restapi.resources;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.mindrot.jbcrypt.BCrypt;
+import org.unnamedgroup.restapi.model.Canale;
+import org.unnamedgroup.restapi.model.Palinsesto;
+import org.unnamedgroup.restapi.model.PalinsestoCanaliProgrammi;
+import org.unnamedgroup.restapi.model.Programma;
 import org.unnamedgroup.restapi.security.DBManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class CanaliDB {
+    public static ArrayList<String[]> getCanali()  throws SQLException {
+        ArrayList<String[]> result = new ArrayList<>();
+
+
+        Connection dbConnection = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+
+        dbConnection = DBManager.getDBConenction();
+        pst = dbConnection.prepareStatement("SELECT * FROM canale");
+
+
+
+
+
+        rs = pst.executeQuery();
+
+
+        while (rs.next()) {
+            String[] canale = new String[3];
+
+                canale[0] = rs.getString("nome");
+                canale[1] = String.valueOf(rs.getInt("id_canale"));
+                canale[2] = "http://localhost:8080/unnamed_api-1.0-SNAPSHOT/rest/canali/"+  canale[1]   +"/palinsesto";
+           result.add(canale);
+        }
+
+        dbConnection.close();
+        return result;
+    }
+
+
+
     public static String getNome(int id) throws SQLException {
 
         String result = "";
@@ -30,6 +67,7 @@ public class CanaliDB {
 
         }
         dbConnection.close();
+
         return result;
     }
 

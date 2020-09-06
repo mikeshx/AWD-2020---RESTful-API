@@ -31,13 +31,13 @@ public class CanaliResource {
 
 
     //estensione del path con segmento statico "count"
-    @Path("count")
+    @Path("")
     @GET
     @Produces("application/json")
-    public Response getNumberOfCanali(@QueryParam("pIVA") Integer partitaIVA) throws SQLException {
-        int size; //per esempio
-        size = CanaliDB.getNumberOfCanali();
-        return Response.ok(size).build();
+    public Response getCanali() throws SQLException, ParseException  {
+        ArrayList<String[]> canali = new ArrayList<>();
+        canali = CanaliDB.getCanali();
+        return Response.ok(canali).build();
     }
     @Path("{canale: [a-z0-9]+}/palinsesto/{data: [a-z0-9]+}")
     @GET
