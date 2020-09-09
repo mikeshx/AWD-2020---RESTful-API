@@ -78,7 +78,7 @@ public class AutenticazioneResource {
     @Path("canali/{nome_canale: [a-z0-9]+}/{id: [0-9]+}/{nuovo_nome: [a-z0-9]+}")
     @PUT
     @Produces("application/json")
-    public Response addChannel(ContainerRequestContext requestContext, @PathParam("nome_canale") String nome_canale,
+    public Response editChannel(ContainerRequestContext requestContext, @PathParam("nome_canale") String nome_canale,
                                @PathParam("id") int id_canale, @PathParam("nuovo_nome") String nuovo_nome) throws SQLException, ParseException {
 
         // Check if a username cookie exists, otherwise we return unauthorized
@@ -112,6 +112,103 @@ public class AutenticazioneResource {
 
         return Response.status(Response.Status.UNAUTHORIZED).build();
     }
+
+    /** ADD A NEW PROGRAM */
+    @Logged
+    @Path("programmi/{titolo: [a-z0-9]+}/{descrizione: [a-z0-9]+}/{genere: [a-z0-9]+}/{scheda_approfondimento: [a-z0-9]+}/{is_serie: [0-9]+}/{num_stagione_serie: [0-9]+}/{num_episodio_serie: [0-9]+}")
+    @POST
+    @Produces("application/json")
+    public Response addProgram(ContainerRequestContext requestContext,
+                               @PathParam("titolo") String titolo,
+                               @PathParam("descrizione") String descrizione,
+                               @PathParam("genere") String genere,
+                               @PathParam("scheda_approfondimento") String scheda_approfondimento,
+                               @PathParam("is_serie") int is_serie,
+                               @PathParam("num_stagione_serie") int num_stagione_serie,
+                               @PathParam("num_episodio_serie") int num_episodio_serie
+                               ) throws SQLException, ParseException {
+
+        // convert the int value in boolean
+        boolean is_serie_real = false;
+        if (is_serie == 1) is_serie_real = true;
+
+        // Check if a username cookie exists, otherwise we return unauthorized
+        if (!requestContext.getCookies().containsKey("username")) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // If the username is empty we return unauthorized
+        String username = requestContext.getCookies().get("username").getValue();
+        if (username.isEmpty()) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // Now we check if the current user is admin
+        if (!DBManager.checkAdmin(username)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // Check if the channel exists
+        // According to RFC 7231, a 303 See Other MAY be used If the result of processing
+        // a POST would be equivalent to a representation of an existing resource.
+        if (DBManager.checkIfProgramExists(titolo)) {
+            return Response.status(303).build();
+        }
+
+        // Add the new channel
+
+        if (DBManager.addProgram(titolo, descrizione, genere, scheda_approfondimento, is_serie_real, num_stagione_serie, num_episodio_serie)) {
+            return Response.ok().build();
+        } else return Response.status(409).build();
+    }
+
+    /** EDIT A PROGRAM BY TITLE */
+    // PUT:
+
+    // TODO: change the url to 'auth/{SID}/canali' istead of 'auth/canali'
+    @Logged
+    @Path("programmi/edit/{titolo: [a-z0-9]+}/{descrizione: [a-z0-9]+}/{genere: [a-z0-9]+}/{scheda_approfondimento: [a-z0-9]+}/{is_serie: [0-9]+}/{num_stagione_serie: [0-9]+}/{num_episodio_serie: [0-9]+}/{id_programma: [0-9]+}")
+    @PUT
+    @Produces("application/json")
+    public Response editProgram(ContainerRequestContext requestContext,
+                                @PathParam("titolo") String titolo,
+                                @PathParam("descrizione") String descrizione,
+                                @PathParam("genere") String genere,
+                                @PathParam("scheda_approfondimento") String scheda_approfondimento,
+                                @PathParam("is_serie") int is_serie,
+                                @PathParam("num_stagione_serie") int num_stagione_serie,
+                                @PathParam("num_episodio_serie") int num_episodio_serie,
+                                @PathParam("id_programma") int id_programma) throws SQLException, ParseException {
+
+        // Check if a username cookie exists, otherwise we return unauthorized
+        if (!requestContext.getCookies().containsKey("username")) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // If the username is empty we return unauthorized
+        String username = requestContext.getCookies().get("username").getValue();
+        if (username.isEmpty()) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        // Now we check if the current user is admin
+        if (!DBManager.checkAdmin(username)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        boolean is_serie_real = false;
+        if (is_serie == 1) is_serie_real = true;
+
+        // Update the channel with the new name
+        // returns 200 (ok)
+        if (DBManager.updateProgramInfo(titolo, descrizione, genere, scheda_approfondimento, is_serie_real, num_stagione_serie, num_episodio_serie, id_programma)) {
+            return Response.ok().build();
+        }
+
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+
 
     // POST ==> /rest/auth/login?username=admin&password=admin
     @POST
